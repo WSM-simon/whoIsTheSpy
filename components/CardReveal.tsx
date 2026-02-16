@@ -8,6 +8,9 @@ interface CardRevealProps {
   onRevealed: (playerId: number, photoUrl: string) => void
 }
 
+// Configuration constants
+const PHOTO_CONFIRMATION_DELAY = 1500 // milliseconds
+
 export default function CardReveal({ player, onRevealed }: CardRevealProps) {
   const [showWord, setShowWord] = useState(false)
   const [photoTaken, setPhotoTaken] = useState(false)
@@ -59,7 +62,7 @@ export default function CardReveal({ player, onRevealed }: CardRevealProps) {
         // Wait a moment before continuing
         setTimeout(() => {
           onRevealed(player.id, photoUrl)
-        }, 1500)
+        }, PHOTO_CONFIRMATION_DELAY)
       }
     } else {
       // If no camera, continue anyway

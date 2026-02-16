@@ -25,6 +25,11 @@ export default function GameSetup({ onStart }: GameSetupProps) {
       return
     }
 
+    if (playerCount - spyCount < 2) {
+      setError('至少需要2名好人才能开始游戏')
+      return
+    }
+
     setLoading(true)
     setError('')
 

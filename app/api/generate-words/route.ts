@@ -33,7 +33,10 @@ export async function POST(request: NextRequest) {
           content: `请为${playerCount}个玩家（其中${spyCount}个卧底）生成游戏词语。`,
         },
       ],
+      response_format: { type: 'json_object' },
       temperature: 0.8,
+    }, {
+      timeout: 30000,
     })
 
     const content = completion.choices[0].message.content
@@ -41,8 +44,13 @@ export async function POST(request: NextRequest) {
       throw new Error('No content returned from OpenAI')
     }
 
-    // Parse the response
-    const words = JSON.parse(content)
+    // Parse the response with error handling
+    let words
+    try {
+      words = JSON.parse(content)
+    } catch (parseError) {
+      throw new Error('Failed to parse OpenAI response as JSON')
+    }
 
     return NextResponse.json({
       civilianWord: words.civilianWord,

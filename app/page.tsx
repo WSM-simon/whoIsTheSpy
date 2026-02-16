@@ -119,9 +119,9 @@ export default function Home() {
           <GamePlay players={gameState.players} onAction={handlePlayerAction} />
         )}
 
-        {gameState.phase === 'result' && (
+        {gameState.phase === 'result' && gameState.winner && (
           <GameResult
-            winner={gameState.winner!}
+            winner={gameState.winner}
             players={gameState.players}
             onReset={resetGame}
           />
