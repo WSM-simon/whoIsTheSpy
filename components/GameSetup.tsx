@@ -12,6 +12,7 @@ export default function GameSetup({ onStart }: GameSetupProps) {
   const [spyCount, setSpyCount] = useState(2)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [demoMode, setDemoMode] = useState(true)
 
   const handleStart = async () => {
     if (spyCount >= playerCount) {
@@ -28,7 +29,8 @@ export default function GameSetup({ onStart }: GameSetupProps) {
     setError('')
 
     try {
-      const response = await fetch('/api/generate-words', {
+      const apiUrl = demoMode ? '/api/generate-words-demo' : '/api/generate-words'
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ playerCount, spyCount }),
@@ -69,6 +71,24 @@ export default function GameSetup({ onStart }: GameSetupProps) {
       <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">游戏设置</h2>
 
       <div className="space-y-6">
+        <div className="flex items-center justify-between bg-blue-50 p-4 rounded-lg">
+          <label className="text-lg font-medium text-gray-700">
+            演示模式（无需API密钥）
+          </label>
+          <button
+            onClick={() => setDemoMode(!demoMode)}
+            className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${
+              demoMode ? 'bg-blue-600' : 'bg-gray-300'
+            }`}
+          >
+            <span
+              className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                demoMode ? 'translate-x-7' : 'translate-x-1'
+              }`}
+            />
+          </button>
+        </div>
+
         <div>
           <label className="block text-lg font-medium text-gray-700 mb-2">
             玩家数量: {playerCount}

@@ -16,6 +16,13 @@ export default function CardReveal({ player, onRevealed }: CardRevealProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
 
+  // Reset state when player changes
+  useEffect(() => {
+    setShowWord(false)
+    setPhotoTaken(false)
+    setCameraError('')
+  }, [player.id])
+
   const startCamera = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
