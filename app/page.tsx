@@ -13,6 +13,7 @@ export interface Player {
   name: string
   word: string
   isSpy: boolean
+  isWhiteboard: boolean
   hasRevealed: boolean
   isEliminated: boolean
   forgotWord: boolean
@@ -72,6 +73,7 @@ export default function Home() {
     // Check victory conditions
     const alivePlayers = updatedPlayers.filter(p => !p.isEliminated)
     const aliveSpies = alivePlayers.filter(p => p.isSpy).length
+    // Whiteboard players count as civilians
     const aliveCivilians = alivePlayers.filter(p => !p.isSpy).length
 
     let winner: 'spy' | 'civilian' | null = null

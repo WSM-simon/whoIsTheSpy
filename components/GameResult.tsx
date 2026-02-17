@@ -10,7 +10,8 @@ interface GameResultProps {
 
 export default function GameResult({ winner, players, onReset }: GameResultProps) {
   const spies = players.filter(p => p.isSpy)
-  const civilians = players.filter(p => !p.isSpy)
+  const whiteboards = players.filter(p => p.isWhiteboard)
+  const civilians = players.filter(p => !p.isSpy && !p.isWhiteboard)
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -31,7 +32,7 @@ export default function GameResult({ winner, players, onReset }: GameResultProps
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
           <div className="bg-red-50 p-6 rounded-xl">
             <h3 className="text-2xl font-bold text-red-800 mb-4 flex items-center gap-2">
               🎭 卧底阵营
@@ -63,6 +64,43 @@ export default function GameResult({ winner, players, onReset }: GameResultProps
                 </div>
               ))}
             </div>
+          </div>
+
+          <div className="bg-gray-50 p-6 rounded-xl">
+            <h3 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+              ⬜ 白板阵营
+            </h3>
+            {whiteboards.length === 0 ? (
+              <div className="text-gray-500 text-center py-4">本局无白板</div>
+            ) : (
+              <div className="space-y-3">
+                {whiteboards.map(player => (
+                  <div
+                    key={player.id}
+                    className={`bg-white p-4 rounded-lg shadow ${
+                      player.isEliminated ? 'opacity-60' : ''
+                    }`}
+                  >
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-semibold text-gray-800">{player.name}</span>
+                      <span className={player.isEliminated ? 'text-red-600' : 'text-green-600'}>
+                        {player.isEliminated ? '❌ 出局' : '✓ 存活'}
+                      </span>
+                    </div>
+                    <div className="text-gray-600">
+                      词语: <span className="font-bold text-gray-600">{player.word}</span>
+                    </div>
+                    {player.photoUrl && (
+                      <img
+                        src={player.photoUrl}
+                        alt={player.name}
+                        className="mt-2 w-full h-32 object-cover rounded"
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="bg-green-50 p-6 rounded-xl">

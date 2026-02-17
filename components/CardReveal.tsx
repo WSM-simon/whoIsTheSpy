@@ -114,9 +114,16 @@ export default function CardReveal({ player, onRevealed }: CardRevealProps) {
           </div>
         ) : (
           <div className="space-y-6">
-            <div className="bg-gradient-to-r from-yellow-400 to-orange-400 p-8 rounded-2xl text-center shadow-lg">
+            <div className={`p-8 rounded-2xl text-center shadow-lg ${
+              player.isWhiteboard 
+                ? 'bg-gradient-to-r from-gray-300 to-gray-400' 
+                : 'bg-gradient-to-r from-yellow-400 to-orange-400'
+            }`}>
               <p className="text-gray-700 mb-2 text-lg">您的词语是：</p>
               <p className="text-5xl font-bold text-white drop-shadow-lg">{player.word}</p>
+              {player.isWhiteboard && (
+                <p className="text-sm text-gray-700 mt-2">（您是白板玩家，需要根据其他人的描述猜测词语）</p>
+              )}
             </div>
 
             <div className="relative">

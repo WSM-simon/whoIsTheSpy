@@ -10,6 +10,7 @@ interface GameSetupProps {
 export default function GameSetup({ onStart }: GameSetupProps) {
   const [playerCount, setPlayerCount] = useState(6)
   const [spyCount, setSpyCount] = useState(2)
+  const [whiteboardCount, setWhiteboardCount] = useState(0)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [demoMode, setDemoMode] = useState(true)
@@ -25,7 +26,12 @@ export default function GameSetup({ onStart }: GameSetupProps) {
       return
     }
 
-    if (playerCount - spyCount < 2) {
+    if (spyCount + whiteboardCount >= playerCount) {
+      setError('卧底和白板总数必须少于玩家总数')
+      return
+    }
+
+    if (playerCount - spyCount - whiteboardCount < 2) {
       setError('至少需要2名好人才能开始游戏')
       return
     }
@@ -47,17 +53,26 @@ export default function GameSetup({ onStart }: GameSetupProps) {
 
       const { civilianWord, spyWord } = await response.json()
 
-      // Randomly assign spy roles
+      // Randomly assign spy and whiteboard roles
       const spyIndices = new Set<number>()
       while (spyIndices.size < spyCount) {
         spyIndices.add(Math.floor(Math.random() * playerCount))
       }
 
+      const whiteboardIndices = new Set<number>()
+      while (whiteboardIndices.size < whiteboardCount) {
+        const index = Math.floor(Math.random() * playerCount)
+        if (!spyIndices.has(index)) {
+          whiteboardIndices.add(index)
+        }
+      }
+
       const players: Player[] = Array.from({ length: playerCount }, (_, i) => ({
         id: i,
         name: `玩家 ${i + 1}`,
-        word: spyIndices.has(i) ? spyWord : civilianWord,
+        word: whiteboardIndices.has(i) ? '白板' : spyIndices.has(i) ? spyWord : civilianWord,
         isSpy: spyIndices.has(i),
+        isWhiteboard: whiteboardIndices.has(i),
         hasRevealed: false,
         isEliminated: false,
         forgotWord: false,
@@ -130,6 +145,24 @@ export default function GameSetup({ onStart }: GameSetupProps) {
           </div>
         </div>
 
+        <div>
+          <label className="block text-lg font-medium text-gray-700 mb-2">
+            白板数量: {whiteboardCount}
+          </label>
+          <input
+            type="range"
+            min="0"
+            max={Math.max(0, playerCount - spyCount - 2)}
+            value={Math.min(whiteboardCount, Math.max(0, playerCount - spyCount - 2))}
+            onChange={e => setWhiteboardCount(Number(e.target.value))}
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+          />
+          <div className="flex justify-between text-sm text-gray-600 mt-1">
+            <span>0</span>
+            <span>{Math.max(0, playerCount - spyCount - 2)}</span>
+          </div>
+        </div>
+
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
             {error}
@@ -149,6 +182,7 @@ export default function GameSetup({ onStart }: GameSetupProps) {
         <h3 className="font-semibold text-gray-700 mb-2">游戏规则：</h3>
         <ul className="text-sm text-gray-600 space-y-1">
           <li>• 每位玩家点击查看自己的词语</li>
+          <li>• 白板玩家看到的是"白板"二字</li>
           <li>• 查看时会自动拍照留念</li>
           <li>• 所有人查看后开始游戏</li>
           <li>• 点击卡牌投票出局或标记忘词</li>

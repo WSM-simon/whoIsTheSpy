@@ -13,7 +13,8 @@ export default function GamePlay({ players, onAction }: GamePlayProps) {
 
   const alivePlayers = players.filter(p => !p.isEliminated)
   const aliveSpies = alivePlayers.filter(p => p.isSpy).length
-  const aliveCivilians = alivePlayers.filter(p => !p.isSpy).length
+  const aliveWhiteboards = alivePlayers.filter(p => p.isWhiteboard).length
+  const aliveCivilians = alivePlayers.filter(p => !p.isSpy && !p.isWhiteboard).length
 
   const handleEliminate = () => {
     if (selectedPlayer !== null) {
@@ -40,6 +41,9 @@ export default function GamePlay({ players, onAction }: GamePlayProps) {
           </div>
           <div className="bg-green-100 px-6 py-3 rounded-lg">
             <span className="text-green-800 font-semibold">好人: {aliveCivilians}</span>
+          </div>
+          <div className="bg-gray-100 px-6 py-3 rounded-lg">
+            <span className="text-gray-800 font-semibold">白板: {aliveWhiteboards}</span>
           </div>
           <div className="bg-red-100 px-6 py-3 rounded-lg">
             <span className="text-red-800 font-semibold">卧底: {aliveSpies}</span>
@@ -69,13 +73,15 @@ export default function GamePlay({ players, onAction }: GamePlayProps) {
                   ? 'from-gray-400 to-gray-600'
                   : player.forgotWord
                   ? 'from-orange-400 to-orange-600'
+                  : player.isWhiteboard
+                  ? 'from-gray-300 to-gray-500'
                   : 'from-purple-500 to-blue-500'
                 }
               `}
             >
               <div className="text-white text-center">
                 <div className="text-4xl mb-2">
-                  {player.isEliminated ? '💀' : player.forgotWord ? '🤔' : '🎴'}
+                  {player.isEliminated ? '💀' : player.forgotWord ? '🤔' : player.isWhiteboard ? '⬜' : '🎴'}
                 </div>
                 <div className="font-bold text-lg">{player.name}</div>
                 {player.isEliminated && (
